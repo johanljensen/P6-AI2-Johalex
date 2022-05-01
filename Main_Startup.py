@@ -1,7 +1,9 @@
+import os
+
 import pygame
 import sys
 
-from GameLoop import GameLoop
+from AIManager import AIManager
 
 class MainStartup:
 
@@ -96,8 +98,8 @@ class MainStartup:
                         pygame.quit()
                         sys.exit()
         if self.gameState == "play":
-            GameLoop().StartLoop()
-            print('Play')
+            AIManager().StartAI()
+
 
     def checkIfClicked(self):
         if self.mx >= self.playCoordinates[0]:
