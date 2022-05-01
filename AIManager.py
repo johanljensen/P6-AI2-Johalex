@@ -16,10 +16,12 @@ class AIManager:
         self.pickups = []
         self.actors = []
 
+#Entry point of the AI simulation
     def StartAI(self):
         self.SetupLoop()
         self.RunLoop()
 
+#Initiates pygame, pickups and actors
     def SetupLoop(self):
 
         if self.aiSettings.showPygame:
@@ -32,9 +34,9 @@ class AIManager:
 
         for i in range(0, self.aiSettings.populationCount):
             newActor = Actor.Actor(self.aiSettings, "Actor")
-            newActor.SetNodes(self.aiSettings)
             self.actors.append(newActor)
 
+#Runs the simulation of generations and the evolutions in between
     def RunLoop(self):
 
         simulation = Simulation.Simulation()

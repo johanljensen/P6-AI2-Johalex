@@ -16,10 +16,11 @@ class Simulation:
     def RunSimulation(self, aiSettings, actors, pickups, generation, screen):
         print("simulating generation")
 
+#Lower timeStepFactor = smaller timeSteps = slower simulation time = more observable
         timeSteps = int(aiSettings.generationTime / aiSettings.timeStepFactor)
-
         for timeStep in range(0, timeSteps, 1):
 
+#All of the pygame draw calls are accessed within this loop
             if aiSettings.showPygame:
                 running = True
                 for e in pygame.event.get():
@@ -29,7 +30,9 @@ class Simulation:
                     break
 
                 self.drawPygameFrame(actors, pickups, generation, timeStep, screen)
+#End of pygame draw
 
+#Detect if any pickups are close enough to collect
             for pickup in pickups:
                 for actor in actors:
                     distance = self.GetDistance(pickup.xPos, actor.xPos, pickup.yPos, actor.yPos)
@@ -41,6 +44,7 @@ class Simulation:
                     actor.dist_pickup = 100
                     actor.angle_pickup = 0
 
+#Detect distance and angle to closest pickup
             for pickup in pickups:
                 for actor in actors:
                     distance = self.GetDistance(pickup.xPos, actor.xPos, pickup.yPos, actor.yPos)
@@ -103,8 +107,9 @@ class Simulation:
         if abs(rotation) > 180: rotation += 360
         return rotation / 180
 
+#Modifies the positioning of all the pygame drawn stuff
     def GetPoint(self, xPos, yPos):
-        xPlus = 200         #450
+        xPlus = 300         #450
         yPlus = 100         #300
         multiplier = 4    #112
         return int(xPos * multiplier + xPlus), int(yPos * multiplier + yPlus)
