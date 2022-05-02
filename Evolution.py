@@ -23,13 +23,22 @@ class Evolution():
         for actor in oldActors:
             if actor.fitnessScore > stats.best:
                 stats.best = actor.fitnessScore
+                stats.bestSize = actor.size
 
             if actor.fitnessScore < stats.worst or stats.worst == -1:
                 stats.worst = actor.fitnessScore
 
+            if actor.size > stats.biggest or stats.biggest == -1:
+                stats.biggest = actor.size
+
+            if actor.size < stats.smallest or stats.smallest == -1:
+                stats.smallest = actor.size
+
             stats.sum += actor.fitnessScore
+            stats.totalSize += actor.size
             stats.count += 1
         stats.average = stats.sum / stats.count
+        stats.averageSize = stats.totalSize / stats.count
 
 #Sort based on the fitnessScore, only time we have to use the attribute name?
         actorsSorted = sorted(oldActors, key=operator.attrgetter('fitnessScore'), reverse=True)
@@ -40,7 +49,7 @@ class Evolution():
         for i in range(0, elitismAmount):
             #newActor = Actor.Actor(aiSettings, actorsSorted[i].name, actorsSorted[i].innerHidden, actorsSorted[i].hiddenOuter)
             #newActors.append(newActor)
-            elite = Actor.Actor(aiSettings, actorsSorted[i].name, actorsSorted[i].innerHidden, actorsSorted[i].hiddenOuter)
+            elite = Actor.Actor(aiSettings, actorsSorted[i].name, actorsSorted[i].size, actorsSorted[i].innerHidden, actorsSorted[i].hiddenOuter)
             elites.append(elite)
 
 #Create new actors to refill the rest of the population
@@ -49,12 +58,31 @@ class Evolution():
 #Randomly pick candicates from which to base the new weights on
             candidates = range(0, elitismAmount)
             randomIndex = random.sample(candidates, 2)
-            actor1 = elites[randomIndex[0]]
-            actor2 = elites[randomIndex[1]]
+            actor1 = actorsSorted[randomIndex[0]]
+            actor2 = actorsSorted[randomIndex[1]]
 
             crossWeight = random.random()
             newInnerHidden = (crossWeight * actor1.innerHidden) + ((1 - crossWeight) * actor2.innerHidden)
             newHiddenOuter = (crossWeight * actor1.hiddenOuter) + ((1 - crossWeight) * actor2.hiddenOuter)
+
+#Randomly manipulate the size in favour of the candidate who performed better
+            sizeSortedCandidates = sorted((actor1, actor2), key=operator.attrgetter('size'))
+            if actor1.fitnessScore == actor2.fitnessScore:
+                newSize = random.uniform(sizeSortedCandidates[0].size - .2, sizeSortedCandidates[1].size + .2)
+            else:
+                fitSortedCandidates = sorted((actor1, actor2), key=operator.attrgetter('fitnessScore'))
+                relativeFitness = fitSortedCandidates[0].fitnessScore / fitSortedCandidates[1].fitnessScore
+
+                #bring all values below 0.5 so the winner always benefits more
+                relativeFitness = relativeFitness / 2
+
+
+                #if the smaller candidate scored the most
+                if sizeSortedCandidates[0] == fitSortedCandidates[1]:
+                    newSize = random.uniform(sizeSortedCandidates[0].size - 1 + relativeFitness, sizeSortedCandidates[1].size + relativeFitness)
+                else:
+                    newSize = random.uniform(sizeSortedCandidates[0].size - relativeFitness, sizeSortedCandidates[1].size + 1 - relativeFitness)
+
 
 #Random chance for a new actor to randomly change one of the attributes
             mutateRoll = random.random()
@@ -79,7 +107,9 @@ class Evolution():
                     if newHiddenOuter[indexRow][indexCol] < -1:
                         newHiddenOuter[indexRow][indexCol] = -1
 
-            newActor = Actor.Actor(aiSettings, 'gen['+str(generation)+']-actor['+str(i)+']', newInnerHidden, newHiddenOuter)
+                newSize = random.uniform(1, 10)
+
+            newActor = Actor.Actor(aiSettings, 'gen['+str(generation)+']-actor['+str(i)+']', newSize, newInnerHidden, newHiddenOuter)
             newActors.append(newActor)
 
         for i in range(0, elites.__len__()):

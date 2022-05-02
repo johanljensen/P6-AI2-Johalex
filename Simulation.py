@@ -38,7 +38,7 @@ class Simulation:
                 for actor in actors:
                     distance = self.GetDistance(pickup.xPos, actor.xPos, pickup.yPos, actor.yPos)
 
-                    if distance <= 0.5:
+                    if distance <= 0.5 * actor.reach:
                         actor.fitnessScore += pickup.fitnessWorth
                         pickup.respawn(aiSettings)
 
@@ -66,11 +66,11 @@ class Simulation:
     def drawPygameFrame(self, actors, pickups, generation, timeStep, screen):
 
         screen.fill((255,255,255))
-        pygame.draw.rect(screen, (0,0,0), [(175,25), (550,550)], 2)
+        pygame.draw.rect(screen, (0,0,0), [(10,0), (880,580)], 2)
 
         for actor in actors:
             point = self.GetPoint(actor.xPos, actor.yPos)
-            self.drawActor(point[0], point[1], actor.direction, screen)
+            self.drawActor(actor, point[0], point[1], actor.direction, screen)
 
         for pickup in pickups:
             point = self.GetPoint(pickup.xPos, pickup.yPos)
@@ -78,24 +78,35 @@ class Simulation:
 
         textGen = self.font.render(r'Generation: '+str(generation), 1, (0,0,0))
         textTime = self.font.render(r'Timestep: '+str(timeStep), 1, (0,0,0))
-        screen.blit(textGen, (80, 75))
-        screen.blit(textTime, (80, 150))
+        screen.blit(textGen, (20, 555))
+        screen.blit(textTime, (180, 555))
         pygame.display.flip()
 
-    def drawActor(self, xPos, yPos, rotation, screen):
-        radius = 10
-        pygame.draw.circle(screen, (0, 100, 0), (xPos, yPos), radius)
-        pygame.draw.circle(screen, (144, 238, 144), (xPos, yPos), radius - 3)
+    def drawActor(self, actor, xPos, yPos, rotation, screen):
+        actorScaler = actor.size / (3 - 2 / actor.size)
+        pointA = (-5 * actorScaler, 4 * actorScaler)
+        pointB = (-5 * actorScaler, -4 * actorScaler)
+        pointC = (7 * actorScaler, 0 * actorScaler)
 
-        tailLength = 12
-        xPos2 = cos(radians(rotation)) * tailLength + xPos
-        yPos2 = sin(radians(rotation)) * tailLength + yPos
-        pygame.draw.line(screen, (0, 100, 0), (xPos, yPos), (xPos2, yPos2), 2)
+        pointD = (-5.5 * actorScaler, 4.5 * actorScaler)
+        pointE = (-5.5 * actorScaler, -4.5 * actorScaler)
+        pointF = (8 * actorScaler, 0 * actorScaler)
+
+        points2 = [pointD, pointE, pointF]
+        points2 = [pygame.math.Vector2(p).rotate(rotation) for p in points2]
+        points2 = [((xPos, yPos) + p) for p in points2]
+        pygame.draw.polygon(screen, (0, 0, 0), points2)
+
+        points = [pointA, pointB, pointC]
+        points = [pygame.math.Vector2(p).rotate(rotation) for p in points]
+        points = [((xPos,yPos) + p) for p in points]
+        pygame.draw.polygon(screen, (155, 0, 0), points)
+
 
     def drawPickup(self, xPos, yPos, screen):
         radius = 7
-        pygame.draw.circle(screen, (72, 61, 139), (xPos, yPos), radius)
-        pygame.draw.circle(screen, (123, 104, 238), (xPos, yPos), radius - 3)
+        pygame.draw.circle(screen, (0, 225, 75), (xPos, yPos), radius)
+        pygame.draw.circle(screen, (175, 225, 0), (xPos, yPos), radius - 2)
 
     def GetDistance(self, xPos1, xPos2, yPos1, yPos2):
         return sqrt((xPos1-xPos2)**2 + (yPos1-yPos2)**2)
@@ -110,7 +121,7 @@ class Simulation:
 
 #Modifies the positioning of all the pygame drawn stuff
     def GetPoint(self, xPos, yPos):
-        xPlus = 300         #450
-        yPlus = 100         #300
-        multiplier = 4    #112
+        xPlus = 0         #450
+        yPlus = 0         #300
+        multiplier = 1    #112
         return int(xPos * multiplier + xPlus), int(yPos * multiplier + yPlus)

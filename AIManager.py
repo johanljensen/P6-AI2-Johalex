@@ -1,3 +1,5 @@
+import random
+
 import pygame
 
 import Actor
@@ -28,12 +30,16 @@ class AIManager:
             pygame.init()
             self.pygameScreen = pygame.display.set_mode([900,600])
 
+    def CreateNewPickups(self):
+        self.pickups = []
         for i in range(0, self.aiSettings.pickupCount):
             newPickup = Pickup.Pickup(self.aiSettings)
             self.pickups.append(newPickup)
 
+    def CreateNewActors(self):
+        self.actors = []
         for i in range(0, self.aiSettings.populationCount):
-            newActor = Actor.Actor(self.aiSettings, "Actor: " + str(i))
+            newActor = Actor.Actor(self.aiSettings, "Actor: " + str(i), random.uniform(8, 10))
             self.actors.append(newActor)
 
 #Runs the simulation of generations and the evolutions in between
@@ -42,10 +48,23 @@ class AIManager:
         simulation = Simulation.Simulation()
         evolution = Evolution.Evolution()
 
+        self.CreateNewActors()
+
         for generation in range(0, self.aiSettings.generationCount):
+
+            print()
+            print('Generation: ',generation)
+
+            self.CreateNewPickups()
 
             self.actors = simulation.RunSimulation(self.aiSettings, self.actors, self.pickups, generation, self.pygameScreen)
             self.actors, stats = evolution.Evolve(self.aiSettings, self.actors, generation)
 
-            print('Gen:',generation,'BEST:',stats.best,'AVG:',stats.average,'WORST:',stats.worst)
+            print('Fitness - BEST: ',stats.best,' WORST: ',stats.worst)
+            print('Score - SUM: ',stats.sum,' AVG:',stats.average)
+            print('Sizes - BIG: ',stats.biggest,' SMALL ',stats.smallest)
+            print('Best Size: ',stats.bestSize)
+            print('Average Size: ',stats.averageSize)
         pass
+
+AIManager().StartAI()

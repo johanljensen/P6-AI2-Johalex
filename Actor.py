@@ -9,24 +9,32 @@ from math import radians
 
 class Actor:
 
-    def __init__(self, aiSettings, name, innerHidden = None, hiddenOuter = None):
+    def __init__(self, aiSettings, name, size, innerHidden=None, hiddenOuter=None):
         self.xPos = uniform(aiSettings.xMin, aiSettings.xMax)
         self.yPos = uniform(aiSettings.yMin, aiSettings.yMax)
 
+        size = max(min(size, aiSettings.maxSize), aiSettings.minSize)
+        self.size = size
+
+        #Adjust these to affect to balance between big and small actors
+        self.maxSpeed = 10 - .6 * self.size
+        self.accel = 3 - .02 * self.size
+        self.rotSpeed = 180 - 10 * self.size
+        self.reach = 1 + 2 * self.size
+
         self.direction = uniform(0, 360)
-        self.velocity = uniform(0, aiSettings.velocityMax)
-        self.rotSpeed = random.randint(0, aiSettings.rotateMax)
+        self.velocity = self.maxSpeed / 2
 
         self.dist_pickup = 100
         self.angle_pickup = 0
-        self.fitnessScore = 0
+        self.fitnessScore = 1
 
         self.name = name
 
         #Default the values if none were provided upon actor creation
         if innerHidden is None or hiddenOuter is None:
-            self.innerHidden = np.random.uniform(-1, 1, (aiSettings.hiddenNodes, aiSettings.inputNodes))
-            self.hiddenOuter = np.random.uniform(-1, 1, (aiSettings.outputNodes, aiSettings.hiddenNodes))
+            self.innerHidden = np.random.uniform(0, 1, (aiSettings.hiddenNodes, aiSettings.inputNodes))
+            self.hiddenOuter = np.random.uniform(0, 1, (aiSettings.outputNodes, aiSettings.hiddenNodes))
         else:
             self.innerHidden = innerHidden
             self.hiddenOuter = hiddenOuter
@@ -37,35 +45,26 @@ class Actor:
 #EXACT DETAILS NOT UNDERSTOOD, BUT THIS DOES STUFF
     def Think(self):
         # SIMPLE MLP
-        #print("InnerHidden and HiddenOuter")
-        #print("" + str(self.innerHidden) + " : " + str(self.hiddenOuter))
         af = lambda x: np.tanh(x)  # activation function
         h1 = af(np.dot(self.innerHidden, self.angle_pickup))  # hidden layer
         out = af(np.dot(self.hiddenOuter, h1))  # output layer
 
-        #print("af - h1 - out")
-        #print("Direction to food" + str(self.angle_pickup))
-        #print("" + str(af) + " : " + str(h1) + " : " + str(out))
-        #print("" + str(out) + " : " + str(out[0]) + " : " + str(out[0][0]))
         # UPDATE dv AND dr WITH MLP RESPONSE
         self.nn_velocity = float(out[0])  # [-1, 1]  (accelerate=1, deaccelerate=-1)
         self.nn_direction = float(out[1])  # [-1, 1]  (left=1, right=-1)
-        #print("nn_velocity and nn_direction")
-        #if abs(self.angle_pickup) > .1:
-        #    print("" + str(self.nn_velocity) + " : " + str(self.nn_direction) + " ::: " + str(self.angle_pickup))
 
     def UpdateDirection(self, aiSettings):
-        self.direction += self.nn_direction * aiSettings.rotateMax * aiSettings.timeStepFactor
-        #self.direction += self.nn_direction * self.rotSpeed
+        self.direction += self.nn_direction * self.rotSpeed * aiSettings.timeStepFactor
         self.direction = self.direction % 360
 
     def UpdateVelocity(self, aiSettings):
-        #print("" + str(self.direction) + " : " + str(self.velocity) + " : " + str(self.nn_velocity))
-        self.velocity += self.nn_velocity * aiSettings.accelMax * aiSettings.timeStepFactor
+
+        rotateSlowdown = abs(self.nn_velocity)
+        self.velocity += self.accel * aiSettings.timeStepFactor - rotateSlowdown / 10
         if self.velocity < 0:
             self.velocity = 0
-        if self.velocity > aiSettings.velocityMax:
-            self.velocity = aiSettings.velocityMax
+        if self.velocity > self.maxSpeed:
+            self.velocity = self.maxSpeed
 
     def UpdatePosition(self, aiSettings):
 
