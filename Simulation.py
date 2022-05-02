@@ -65,7 +65,7 @@ class Simulation:
 
     def drawPygameFrame(self, actors, pickups, generation, timeStep, screen):
 
-        screen.fill((255,255,255))
+        screen.fill((55,55,55))
         pygame.draw.rect(screen, (0,0,0), [(10,0), (880,580)], 2)
 
         for actor in actors:

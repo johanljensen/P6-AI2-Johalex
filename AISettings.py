@@ -10,7 +10,7 @@ class AISettings:
     mutateRate = 0.1
 
     generationTime = 100
-    timeStepFactor = 0.01
+    timeStepFactor = 0.05
 
     maxSize = 10
     minSize = 1
@@ -27,3 +27,17 @@ class AISettings:
     xMax = 850
     yMin = 50
     yMax = 550
+
+
+
+
+
+
+
+
+
+
+
+
+
+

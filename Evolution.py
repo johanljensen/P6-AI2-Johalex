@@ -60,10 +60,11 @@ class Evolution():
             randomIndex = random.sample(candidates, 2)
             actor1 = actorsSorted[randomIndex[0]]
             actor2 = actorsSorted[randomIndex[1]]
+            sortedCandidates = sorted((actor1, actor2), key=operator.attrgetter('fitnessScore'))
 
-            crossWeight = random.random()
-            newInnerHidden = (crossWeight * actor1.innerHidden) + ((1 - crossWeight) * actor2.innerHidden)
-            newHiddenOuter = (crossWeight * actor1.hiddenOuter) + ((1 - crossWeight) * actor2.hiddenOuter)
+            crossWeight = .5 + random.random() / 2
+            newInnerHidden = (crossWeight * sortedCandidates[0].innerHidden) + ((1 - crossWeight) * sortedCandidates[1].innerHidden)
+            newHiddenOuter = (crossWeight * sortedCandidates[0].hiddenOuter) + ((1 - crossWeight) * sortedCandidates[1].hiddenOuter)
 
 #Randomly manipulate the size in favour of the candidate who performed better
             sizeSortedCandidates = sorted((actor1, actor2), key=operator.attrgetter('size'))

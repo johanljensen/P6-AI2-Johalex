@@ -62,7 +62,8 @@ class AIManager:
 
             print('Fitness - BEST: ',stats.best,' WORST: ',stats.worst)
             print('Score - SUM: ',stats.sum,' AVG:',stats.average)
-            print('Sizes - BIG: ',stats.biggest,' SMALL ',stats.smallest)
+            print('Sizes - BIGGEST --- SMALLEST:')
+            print(stats.biggest,' --- ',stats.smallest)
             print('Best Size: ',stats.bestSize)
             print('Average Size: ',stats.averageSize)
         pass
