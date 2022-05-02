@@ -18,8 +18,8 @@ class Simulation:
         print("Simulating generation")
 
 #Lower timeStepFactor = smaller timeSteps = slower simulation time = more observable
-        timeSteps = int(aiSettings.generationTime / aiSettings.timeStepFactor)
-        for timeStep in range(0, timeSteps, 1):
+        totalTimeSteps = int(aiSettings.generationTime / aiSettings.timeStepFactor)
+        for timeStep in range(0, totalTimeSteps, 1):
 
 #All of the pygame draw calls are accessed within this loop
             if aiSettings.showPygame:
@@ -30,7 +30,7 @@ class Simulation:
                 if not running:
                     break
 
-                self.drawPygameFrame(actors, pickups, generation, timeStep, screen)
+                self.drawPygameFrame(actors, pickups, generation, totalTimeSteps, timeStep, screen)
 #End of pygame draw
 
 #Detect if any pickups are close enough to collect
@@ -63,7 +63,7 @@ class Simulation:
 
         return actors
 
-    def drawPygameFrame(self, actors, pickups, generation, timeStep, screen):
+    def drawPygameFrame(self, actors, pickups, generation, totalTimeSteps, timeStep, screen):
 
         screen.fill((55,55,55))
         pygame.draw.rect(screen, (0,0,0), [(10,0), (880,580)], 2)
@@ -78,8 +78,10 @@ class Simulation:
 
         textGen = self.font.render(r'Generation: '+str(generation), 1, (0,0,0))
         textTime = self.font.render(r'Timestep: '+str(timeStep), 1, (0,0,0))
+        totalTimeStep = self.font.render(r'/'+str(totalTimeSteps), 1, (0,0,0))
         screen.blit(textGen, (20, 555))
         screen.blit(textTime, (180, 555))
+        screen.blit(totalTimeStep, (330, 555))
         pygame.display.flip()
 
     def drawActor(self, actor, xPos, yPos, rotation, screen):

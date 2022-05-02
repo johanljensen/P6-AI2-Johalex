@@ -17,7 +17,7 @@ class Actor:
         self.size = size
 
         #Adjust these to affect to balance between big and small actors
-        self.maxSpeed = 10 - .6 * self.size
+        self.maxSpeed = 8 - .6 * self.size
         self.accel = 3 - .02 * self.size
         self.rotSpeed = 180 - 10 * self.size
         self.reach = 1 + 2 * self.size

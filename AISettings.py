@@ -9,7 +9,7 @@ class AISettings:
     elitism = 0.4
     mutateRate = 0.1
 
-    generationTime = 100
+    generationTime = 200
     timeStepFactor = 0.05
 
     maxSize = 10
