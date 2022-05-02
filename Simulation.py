@@ -12,9 +12,10 @@ class Simulation:
 
     def __init__(self):
         self.font = pygame.font.Font(None, 30)
+        print("Simulation initiated")
 
     def RunSimulation(self, aiSettings, actors, pickups, generation, screen):
-        print("simulating generation")
+        print("Simulating generation")
 
 #Lower timeStepFactor = smaller timeSteps = slower simulation time = more observable
         timeSteps = int(aiSettings.generationTime / aiSettings.timeStepFactor)
@@ -37,12 +38,11 @@ class Simulation:
                 for actor in actors:
                     distance = self.GetDistance(pickup.xPos, actor.xPos, pickup.yPos, actor.yPos)
 
-                    if distance <= 0.175:
+                    if distance <= 0.5:
                         actor.fitnessScore += pickup.fitnessWorth
                         pickup.respawn(aiSettings)
 
-                    actor.dist_pickup = 100
-                    actor.angle_pickup = 0
+                    actor.dist_pickup = 10000
 
 #Detect distance and angle to closest pickup
             for pickup in pickups:
@@ -104,7 +104,8 @@ class Simulation:
         distance_x = pickup.xPos - actor.xPos
         distance_y = pickup.yPos - actor.yPos
         rotation = degrees(atan2(distance_y, distance_x)) - actor.direction
-        if abs(rotation) > 180: rotation += 360
+        if abs(rotation) > 180:
+            rotation += 360
         return rotation / 180
 
 #Modifies the positioning of all the pygame drawn stuff

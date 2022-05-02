@@ -12,6 +12,7 @@ class Evolution():
         print("Evolution initiated")
 
     def Evolve(self, aiSettings, oldActors, generation):
+        print("Evolving generation")
 
 #Determines how many to keep as elites and how many to replace
         elitismAmount = int(floor(aiSettings.elitism * aiSettings.populationCount))
@@ -23,7 +24,7 @@ class Evolution():
             if actor.fitnessScore > stats.best:
                 stats.best = actor.fitnessScore
 
-            if actor.fitnessScore < stats.worst or stats.worst == 0:
+            if actor.fitnessScore < stats.worst or stats.worst == -1:
                 stats.worst = actor.fitnessScore
 
             stats.sum += actor.fitnessScore
@@ -32,12 +33,15 @@ class Evolution():
 
 #Sort based on the fitnessScore, only time we have to use the attribute name?
         actorsSorted = sorted(oldActors, key=operator.attrgetter('fitnessScore'), reverse=True)
+        elites = []
         newActors = []
 
 #Populate the new list of actors with the elitism% best performing actor from last generation
         for i in range(0, elitismAmount):
-            newActor = Actor.Actor(aiSettings, actorsSorted[i].name, actorsSorted[i].innerHidden, actorsSorted[i].hiddenOuter)
-            newActors.append(newActor)
+            #newActor = Actor.Actor(aiSettings, actorsSorted[i].name, actorsSorted[i].innerHidden, actorsSorted[i].hiddenOuter)
+            #newActors.append(newActor)
+            elite = Actor.Actor(aiSettings, actorsSorted[i].name, actorsSorted[i].innerHidden, actorsSorted[i].hiddenOuter)
+            elites.append(elite)
 
 #Create new actors to refill the rest of the population
         for i in range(0, newActorCount):
@@ -45,8 +49,8 @@ class Evolution():
 #Randomly pick candicates from which to base the new weights on
             candidates = range(0, elitismAmount)
             randomIndex = random.sample(candidates, 2)
-            actor1 = actorsSorted[randomIndex[0]]
-            actor2 = actorsSorted[randomIndex[1]]
+            actor1 = elites[randomIndex[0]]
+            actor2 = elites[randomIndex[1]]
 
             crossWeight = random.random()
             newInnerHidden = (crossWeight * actor1.innerHidden) + ((1 - crossWeight) * actor2.innerHidden)
@@ -78,4 +82,6 @@ class Evolution():
             newActor = Actor.Actor(aiSettings, 'gen['+str(generation)+']-actor['+str(i)+']', newInnerHidden, newHiddenOuter)
             newActors.append(newActor)
 
+        for i in range(0, elites.__len__()):
+            newActors.append(elites[i])
         return newActors, stats

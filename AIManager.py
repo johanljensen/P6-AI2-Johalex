@@ -33,7 +33,7 @@ class AIManager:
             self.pickups.append(newPickup)
 
         for i in range(0, self.aiSettings.populationCount):
-            newActor = Actor.Actor(self.aiSettings, "Actor")
+            newActor = Actor.Actor(self.aiSettings, "Actor: " + str(i))
             self.actors.append(newActor)
 
 #Runs the simulation of generations and the evolutions in between

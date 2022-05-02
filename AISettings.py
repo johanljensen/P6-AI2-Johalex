@@ -3,18 +3,18 @@ class AISettings:
     makePlots = False
     showPygame = True
 
-    populationCount = 10
-    pickupCount = 5
+    populationCount = 25
+    pickupCount = 50
     generationCount = 10
-    elitism = 0.2
+    elitism = 0.4
     mutateRate = 0.1
 
-    generationTime = 200
+    generationTime = 50
     timeStepFactor = 0.01
 
-    rotateMax = 180
-    velocityMax = 2
-    accelMax = 0.4
+    rotateMax = 720
+    velocityMax = 5
+    accelMax = 0.25
 
     inputNodes = 1
     hiddenNodes = 5
