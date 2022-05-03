@@ -33,8 +33,8 @@ class Actor:
 
         #Default the values if none were provided upon actor creation
         if innerHidden is None or hiddenOuter is None:
-            self.innerHidden = np.random.uniform(0, 1, (aiSettings.hiddenNodes, aiSettings.inputNodes))
-            self.hiddenOuter = np.random.uniform(0, 1, (aiSettings.outputNodes, aiSettings.hiddenNodes))
+            self.innerHidden = np.random.uniform(-1, 1, (aiSettings.hiddenNodes, aiSettings.inputNodes))
+            self.hiddenOuter = np.random.uniform(-1, 1, (aiSettings.outputNodes, aiSettings.hiddenNodes))
         else:
             self.innerHidden = innerHidden
             self.hiddenOuter = hiddenOuter
