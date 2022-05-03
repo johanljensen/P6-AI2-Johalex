@@ -42,7 +42,7 @@ class Actor:
         self.nn_velocity = 0
         self.nn_direction = 0
 
-#EXACT DETAILS NOT UNDERSTOOD, BUT THIS DOES STUFF
+#Neural Network nodes, affects direction and velocity when turning to face the next pickup
     def Think(self):
         # SIMPLE MLP
         af = lambda x: np.tanh(x)  # activation function
